@@ -90,14 +90,23 @@
       <!-- Activity 13: Toggle the message visibility when the button is clicked. -->
       <!-- TODO: CODE TO TOGGLE MESSAGE VISIBILITY HERE. Hint: Use the v-if directive. -->
       <button @click="showMessage = !showMessage">Toggle Message</button>
-      <p class="message success">✨ You're a Vue superstar! ✨</p>
-      <p>Click the button to see a message.</p>
+      <p v-if="showMessage" class="message success">
+        ✨ You're a Vue superstar! ✨
+      </p>
+      <p v-else class="message">Click the button to see a message.</p>
     </section>
 
     <section class="lab-section">
       <h2>Attribute, Class and Style Binding with <code>v-bind</code></h2>
       <p>Highlighting Specific Authors:</p>
-
+      <div 
+        v-for="author in authors"
+        :key="author.id"
+        :class="{ highlight: selectedAuthor === author.name }"
+        @click="selectedAuthor = author.name"
+      >
+        {{ author.name }}
+      </div>
     </section>
   </div>
 </template>
@@ -111,6 +120,8 @@ import authors from "../assets/json/authors.json"
 import bookstores from "../assets/json/bookstores.json"
 
 const showMessage = ref(false)
+
+const selectedAuthor = ref(null)
 
 // Activity 2: Get authors born after 1850
 const modernAuthors = computed(() => 
