@@ -75,7 +75,7 @@
       <!-- TODO: CODE TO RENDER LIST OF STORE TYPES HERE -->
       <ul>
         <li v-for="(count, type) in bookstores.storeTypes" :key="type">
-          {{ type }}: {{ count }} stores
+          {{ type }}
         </li>
       </ul> 
 
@@ -118,15 +118,35 @@
       <h2>Attribute, Class and Style Binding with <code>v-bind</code></h2>
       <p>Highlighting Specific Authors:</p>
       <div 
+      v-for="author in authors"
+      :key="author.id"
+      :class="{ highlight: author.name === 'George Orwell' }"
+      :style="author.name === 'George Orwell' 
+        ? { color: 'blue', fontWeight: 'bold', padding: '8px' } 
+        : {}"
+      >
+      {{ author.name }}
+      </div>
+    </section>
+  
+
+  <h2>Highlighting Authors With Click</h2>
+    <section>
+      <div 
         v-for="author in authors"
         :key="author.id"
         :class="{ highlight: selectedAuthor === author.name }"
+        :style="author.name === author.name 
+        ? { color: 'black', fontWeight: 'bold', padding: '8px' } 
+        : {}"
         @click="selectedAuthor = author.name"
       >
         {{ author.name }}
       </div>
+
     </section>
   </div>
+
 </template>
 
 <script setup>
