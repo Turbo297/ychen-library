@@ -1,76 +1,55 @@
 <template>
-  <div class="container vh-100 d-flex align-items-center justify-content-center">
+  <div class="container mt-5">
     <div class="row">
       <div class="col-md-8 offset-md-2">
-        <h1 class="text-center mb-4">User Information Form / Credentials</h1>
-
-        <!-- Disable native HTML5 validation so we control styles/messages -->
-        <form novalidate @submit.prevent="onSubmit">
+        <h1 class="text-center">User Information Form</h1>
+        <form @submit.prevent="submitForm">
           <!-- Username -->
-          <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input
-              id="username"
-              type="text"
-              class="form-control"
-              :class="inputStateClass('username')"
-              v-model.trim="form.username"
-              @blur="touch('username')"
-              placeholder="e.g. yuqing_chen"
-              autocomplete="username"
-              required
-            />
-            <div class="invalid-feedback">{{ errors.username }}</div>
-          </div>
-
+          <div class="row mb-3">
+            <div class="col-sm-6">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                v-model="formData.username">
+            </div>
           <!-- Password -->
-          <div class="mb-3">
+            <div class="col-sm-6">
             <label for="password" class="form-label">Password</label>
             <input
-              id="password"
               type="password"
               class="form-control"
-              :class="inputStateClass('password')"
-              v-model="form.password"
-              @blur="touch('password')"
-              autocomplete="new-password"
-              required
-            />
-            <div class="invalid-feedback">{{ errors.password }}</div>
+              id="password"
+              v-model="formData.password">
+            </div>
           </div>
 
           <!-- Row: Checkbox + Gender -->
           <div class="row mb-3">
-            <div class="col-md-6">
-              <div class="form-check mt-2">
+            <div class="col-sm-6">
+              <div class="form-check">
                 <input
-                  id="isAustralian"
                   class="form-check-input"
                   type="checkbox"
-                  v-model="form.isAustralian"
-                />
-                <label for="isAustralian" class="form-check-label">
+                  id="isAustralian"
+                  v-model="formData.isAustralian">
+                <label class="form-check-label" for="isAustralian">
                   Australian Resident?
                 </label>
               </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-sm-6">
               <label for="gender" class="form-label">Gender</label>
               <select
                 id="gender"
                 class="form-select"
-                :class="inputStateClass('gender')"
-                v-model="form.gender"
-                @blur="touch('gender')"
-                required
-              >
-                <option value="" disabled>Select…</option>
+                v-model="formData.gender">
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
-              <div class="invalid-feedback">{{ errors.gender }}</div>
             </div>
           </div>
 
@@ -81,118 +60,74 @@
               id="reason"
               class="form-control"
               rows="3"
-              :class="inputStateClass('reason')"
-              v-model.trim="form.reason"
-              @blur="touch('reason')"
-              placeholder="Tell us a bit about your goal…"
-              required
-            ></textarea>
-            <div class="invalid-feedback">{{ errors.reason }}</div>
+              v-model.trim="formData.reason"></textarea>
           </div>
 
           <!-- Actions -->
           <div class="text-center">
-            <button type="submit" class="btn btn-primary me-2" :disabled="submitting">
-              {{ submitting ? 'Submitting…' : 'Submit' }}
-            </button>
+            <button type="submit" class="btn btn-primary me-2">Submit</button>
             <button type="button" class="btn btn-secondary" @click="clearForm">
               Clear
             </button>
           </div>
-
-          <!-- Success message -->
-          <div v-if="submitted" class="alert alert-success mt-4" role="alert">
-            ✅ Form submitted successfully!
-          </div>
         </form>
+        <div class="row mt-5" v-if="submittedCards.length">
+          <div class="d-flex flex-wrap justify-content-start">
+              <div v-for="(card, index) in submittedCards" :key="index" class="card m-2" style="width: 18rem;">
+                <div class="card-header">
+                    User Information
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Username: {{ card.username }}</li>
+                    <li class="list-group-item">Password: {{ card.password }}</li>
+                    <li class="list-group-item">Australian Resident: {{ card.isAustralian ? 'Yes' : 'No' }}</li>
+                    <li class="list-group-item">Gender: {{ card.gender }}</li>
+                    <li class="list-group-item">Reason: {{ card.reason }}</li>
+                </ul>
+              </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive, computed, ref } from 'vue'
+import { ref } from 'vue';
+  
+const formData = ref({
+    username: '',
+    password: '',
+    isAustralian: false,
+    reason: '',
+    gender: ''
+});
 
-/** form state */
-const form = reactive({
-  username: '',
-  password: '',
-  isAustralian: false,
-  gender: '',
-  reason: ''
-})
+const submittedCards = ref([]);
 
-/** which fields have been blurred (touched) */
-const touched = reactive({
-  username: false,
-  password: false,
-  gender: false,
-  reason: false
-})
-
-/** validation rules */
-function validate(f) {
-  const e = {}
-  if (!f.username) e.username = 'Username is required.'
-  else if (f.username.length < 3) e.username = 'At least 3 characters.'
-
-  if (!f.password) e.password = 'Password is required.'
-  else if (f.password.length < 6) e.password = 'At least 6 characters.'
-
-  if (!f.gender) e.gender = 'Please choose a gender.'
-
-  if (!f.reason) e.reason = 'Please enter a reason.'
-  else if (f.reason.length < 10) e.reason = 'Please write at least 10 characters.'
-  else if (f.reason.length > 300) e.reason = 'Max 300 characters.'
-
-  return e
-}
-
-const errors = computed(() => validate(form))
-const isValid = computed(() => Object.keys(errors.value).length === 0)
-
-function touch(field) {
-  touched[field] = true
-}
-
-/** add Bootstrap classes: 'is-invalid' / 'is-valid' */
-function inputStateClass(field) {
-  if (!touched[field]) return ''
-  return errors.value[field] ? 'is-invalid' : 'is-valid'
-}
-
-function clearForm() {
-  form.username = ''
-  form.password = ''
-  form.isAustralian = false
-  form.gender = ''
-  form.reason = ''
-  Object.keys(touched).forEach(k => (touched[k] = false))
-  submitted.value = false
-}
-
-const submitting = ref(false)
-const submitted = ref(false)
-
-async function onSubmit() {
-  // mark all as touched so errors show if user clicks submit immediately
-  Object.keys(touched).forEach(k => (touched[k] = true))
-
-  if (!isValid.value) return
-
-  submitting.value = true
-  // simulate request
-  await new Promise(r => setTimeout(r, 600))
-  submitting.value = false
-  submitted.value = true
-  // you can send `form` to your API here
-  console.log('Form payload:', { ...form })
-}
+const submitForm = () => {
+    submittedCards.value.push({
+        ...formData.value
+    });
+};  
 </script>
 
+
+
+
 <style scoped>
-/* Optional: a tiny helper so valid inputs don’t look too bright */
-.is-valid {
-  box-shadow: none;
-}
+   .card {
+   border: 1px solid #ccc;
+   border-radius: 10px;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   }
+   .card-header {
+   background-color: #275FDA;
+   color: white;
+   padding: 10px;
+   border-radius: 10px 10px 0 0;
+   }
+   .list-group-item {
+   padding: 10px;
+   }
 </style>
