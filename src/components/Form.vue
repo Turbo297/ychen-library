@@ -2,7 +2,7 @@
   <div class="container mt-5">
     <div class="row">
       <div class="col-md-8 offset-md-2">
-        <h1 class="text-center">User Information Form</h1>
+        <h1 class="text-center">User Information Form/Credentials</h1>
         <form @submit.prevent="submitForm">
           <!-- Username -->
           <div class="row mb-3">
@@ -110,6 +110,10 @@ const submitForm = () => {
         ...formData.value
     });
 };  
+
+const clearForm = () => {
+  formData.value = { ...formData }  // reset all inputs
+}
 </script>
 
 
