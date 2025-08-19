@@ -12,7 +12,11 @@
                 type="text"
                 class="form-control"
                 id="username"
-                v-model="formData.username">
+                @blur="() => validateName(true)"
+                @input="() => validateName(false)"
+                v-model="formData.username"/>
+              <div v-if="errors.username" class="text-danger">
+                {{ errors.username }}</div>
             </div>
           <!-- Password -->
             <div class="col-sm-6">
@@ -21,7 +25,11 @@
               type="password"
               class="form-control"
               id="password"
-              v-model="formData.password">
+              @blur="() => validatePassword(true)"
+              @input="() => validatePassword(false)"
+              v-model="formData.password" />
+            <div v-if="errors.password" class="text-danger">
+              {{ errors.password }}</div>
             </div>
           </div>
 
@@ -106,14 +114,58 @@ const formData = ref({
 const submittedCards = ref([]);
 
 const submitForm = () => {
+  validateName(true); // Validate username on submit
+  validatePassword(true) // Validate password on submit
+  if (!errors.value.username && !errors.value.password) {
     submittedCards.value.push({
         ...formData.value
-    });
-};  
+    })
+    clearForm();
+  }
+};
 
 const clearForm = () => {
   formData.value = { ...formData }  // reset all inputs
 }
+
+const errors = ref({
+  username: '',
+  password: '',
+  resident: '',
+  gender: '',
+  reason: ''
+});
+
+const validateName = (blur) => {
+  if (formData.value.username.length < 3) {
+    if (blur) errors.value.username = 'Username must be at least 3 characters long';
+  } else {
+    errors.value.username = null;
+  }
+}
+
+const validatePassword = (blur) => {
+  const password = formData.value.password;
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  if (password.length < minLength) {
+    if (blur) errors.value.password = `Password must be at least ${minLength} characters long`;
+  } else if (!hasUpperCase) {
+    if (blur) errors.value.password = 'Password must contain at least one uppercase letter';
+  } else if (!hasLowerCase) {
+    if (blur) errors.value.password = 'Password must contain at least one lowercase letter';
+  } else if (!hasNumber) {
+    if (blur) errors.value.password = 'Password must contain at least one number'; 
+  } else if (!hasSpecialChar) {
+    if (blur) errors.value.password = 'Password must contain at least one special character';
+  } else {
+    errors.value.password = null;
+  }
+};
 </script>
 
 
@@ -124,6 +176,7 @@ const clearForm = () => {
    border: 1px solid #ccc;
    border-radius: 10px;
    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   display: flex;
    }
    .card-header {
    background-color: #275FDA;
