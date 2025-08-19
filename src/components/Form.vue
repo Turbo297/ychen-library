@@ -82,7 +82,7 @@
         <DataTable :value="submittedCards" stripedRows tableStyle="min-width: 50rem">
             <Column field="username" header="Name"></Column>
             <Column field="password" header="Password"></Column>
-            <Column field="isAustralian" header="Resident"></Column>
+            <Column field="isAustralian" header="Australian Resident"></Column>
             <Column field="gender" header="Gender"></Column>
             <Column field="reason" header="Reason"></Column>
         </DataTable>
