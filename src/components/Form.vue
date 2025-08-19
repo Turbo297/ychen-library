@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-5">
     <div class="row">
-      <div class="col-md-8 offset-md-2">
+      <div class="col-md-10 offset-md-1">
         <h1 class="text-center">User Information Form/Credentials</h1>
         <form @submit.prevent="submitForm">
           <!-- Username -->
@@ -79,22 +79,13 @@
             </button>
           </div>
         </form>
-        <div class="row mt-5" v-if="submittedCards.length">
-          <div class="d-flex flex-wrap justify-content-start">
-              <div v-for="(card, index) in submittedCards" :key="index" class="card m-2" style="width: 18rem;">
-                <div class="card-header">
-                    User Information
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Username: {{ card.username }}</li>
-                    <li class="list-group-item">Password: {{ card.password }}</li>
-                    <li class="list-group-item">Australian Resident: {{ card.isAustralian ? 'Yes' : 'No' }}</li>
-                    <li class="list-group-item">Gender: {{ card.gender }}</li>
-                    <li class="list-group-item">Reason: {{ card.reason }}</li>
-                </ul>
-              </div>
-          </div>
-        </div>
+        <DataTable :value="submittedCards" stripedRows tableStyle="min-width: 50rem">
+            <Column field="username" header="Name"></Column>
+            <Column field="password" header="Password"></Column>
+            <Column field="isAustralian" header="Resident"></Column>
+            <Column field="gender" header="Gender"></Column>
+            <Column field="reason" header="Reason"></Column>
+        </DataTable>
       </div>
     </div>
   </div>
@@ -102,6 +93,12 @@
 
 <script setup>
 import { ref } from 'vue';
+
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import ColumnGroup from 'primevue/columngroup';   // optional
+import Row from 'primevue/row';                   // optional
+
   
 const formData = ref({
     username: '',
