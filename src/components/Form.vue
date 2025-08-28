@@ -18,22 +18,51 @@
               <div v-if="errors.username" class="text-danger">
                 {{ errors.username }}</div>
             </div>
-          <!-- Password -->
+          <!-- gender -->
             <div class="col-sm-6">
-            <label for="password" class="form-label">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              id="password"
-              @blur="() => validatePassword(true)"
-              @input="() => validatePassword(false)"
-              v-model="formData.password" />
-            <div v-if="errors.password" class="text-danger">
-              {{ errors.password }}</div>
+              <label for="gender" class="form-label">Gender</label>
+              <select
+                id="gender"
+                class="form-select"
+                v-model="formData.gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
             </div>
           </div>
+          <!-- Password -->
+          <div class="row mb-3">
+            <div class="col-sm-6">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                @blur="() => validatePassword(true)"
+                @input="() => validatePassword(false)"
+                v-model="formData.password" />
+              <div v-if="errors.password" class="text-danger">
+                {{ errors.password }}</div>
+            </div>
+          <!-- Comfirm Password -->
+            <div class="col-md-6 col-sm-6">
+              <label for="confirm-password" class="form-label">Confirm password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="confirm-password"
+                v-model="formData.confirmPassword"
+                @blur="() => validateConfirmPassword(true)"
+              />
+              <div v-if="errors.confirmPassword" class="text-danger">
+                {{ errors.confirmPassword }}
+              </div>
+            </div>
+          </div>
+          
 
-          <!-- Row: Checkbox + Gender -->
+          <!-- Row: Checkbox -->
           <div class="row mb-3">
             <div class="col-sm-6">
               <div class="form-check">
@@ -48,17 +77,7 @@
               </div>
             </div>
 
-            <div class="col-sm-6">
-              <label for="gender" class="form-label">Gender</label>
-              <select
-                id="gender"
-                class="form-select"
-                v-model="formData.gender">
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
+            
           </div>
 
           <!-- Reason -->
@@ -70,7 +89,11 @@
               rows="3"
               v-model.trim="formData.reason"></textarea>
           </div>
-
+          <!-- Suburb -->
+          <div class="mb-3">
+            <label for="reason" class="form-label">Suburb</label>
+            <input type="text" class="form-control" id="suburb" v-bind:value="formData.suburb" />
+          </div>
           <!-- Actions -->
           <div class="text-center">
             <button type="submit" class="btn btn-primary me-2">Submit</button>
@@ -101,12 +124,14 @@ import Row from 'primevue/row';                   // optional
 
   
 const formData = ref({
-    username: '',
-    password: '',
-    isAustralian: false,
-    reason: '',
-    gender: ''
-});
+  username: '',
+  password: '',
+  confirmPassword: '',
+  isAustralian: false,
+  reason: '',
+  gender: '',
+  suburb: 'Clayton'
+})
 
 const submittedCards = ref([]);
 
@@ -126,12 +151,13 @@ const clearForm = () => {
 }
 
 const errors = ref({
-  username: '',
-  password: '',
-  resident: '',
-  gender: '',
-  reason: ''
-});
+  username: null,
+  password: null,
+  confirmPassword: null,
+  resident: null,
+  gender: null,
+  reason: null
+})
 
 const validateName = (blur) => {
   if (formData.value.username.length < 3) {
@@ -163,6 +189,18 @@ const validatePassword = (blur) => {
     errors.value.password = null;
   }
 };
+
+/**
+ * Confirm password validation function that checks if the password and confirm password fields match.
+ * @param blur: boolean - If true, the function will display an error message if the passwords do not match.
+ */
+const validateConfirmPassword = (blur) => {
+  if (formData.value.password !== formData.value.confirmPassword) {
+    if (blur) errors.value.confirmPassword = 'Passwords do not match.'
+  } else {
+    errors.value.confirmPassword = null
+  }
+}
 </script>
 
 
