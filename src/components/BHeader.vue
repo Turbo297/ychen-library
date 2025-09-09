@@ -1,3 +1,13 @@
+<script setup lang="ts">
+import isAuthenticated from '@/authenticate';
+import router from '@/router';
+
+const logout = () => {
+  isAuthenticated.value = false
+  router.push('/login')
+};
+</script>
+
 <template>
   <!-- Using Bootstrap's Header template (starter code) -->
   <!-- https://getbootstrap.com/docs/5.0/examples/headers/ -->
@@ -11,6 +21,12 @@
         </li>
         <li class="nav-item">
           <router-link to="/about" class="nav-link" active-class="active">About</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link to="/login" class="nav-link" active-class="active">Login</router-link>
+        </li>
+        <li class="nav-item">
+          <button v-if="isAuthenticated" class="nav-link" @click="logout">Logout</button>
         </li>
       </ul>
     </header>
